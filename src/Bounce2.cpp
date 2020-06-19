@@ -11,6 +11,7 @@ Bounce::Bounce()
     , interval_millis(10)
     , state(0)
     , pin(0)
+    , analog(false)
 {}
 
 void Bounce::attach(int pin) {
@@ -25,6 +26,23 @@ void Bounce::attach(int pin) {
     previous_millis = millis();
 #endif
 }
+
+void Bounce::attachAnalog(int pin, uint16_t r_threshold) {
+    this->pin = pin;
+    state = 0;
+    analog = true;
+    threshold = r_threshold;
+    if (readCurrentState()) {
+        setStateFlag(DEBOUNCED_STATE | UNSTABLE_STATE);
+    }
+#ifdef BOUNCE_LOCK_OUT
+    previous_millis = 0;
+#else
+    previous_millis = millis();
+#endif
+}
+
+
 
 void Bounce::attach(int pin, int mode){
     setPinMode(pin, mode);
