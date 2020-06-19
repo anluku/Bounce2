@@ -108,7 +108,7 @@ class Bounce
     */
     void attach(int pin);
     
-
+    void attachAnalog(int pin, uint16_t r_threshold);
     /**
     @brief  Sets the debounce interval in milliseconds.
             
@@ -187,9 +187,18 @@ class Bounce
     uint16_t interval_millis;
     uint8_t state;
     uint8_t pin;
+    bool analog;
+    int16_t threshold;
     unsigned long stateChangeLastTime;
     unsigned long durationOfPreviousState;
-    virtual bool readCurrentState() { return digitalRead(pin); }
+    //virtual bool readCurrentState() { return digitalRead(pin); }
+    virtual bool readCurrentState() {
+        if ( !analog ) {
+            return digitalRead(pin);
+        }
+        return ( analogRead(pin) > threshold );
+    }  
+  
     virtual void setPinMode(int pin, int mode) {
 #if defined(ARDUINO_ARCH_STM32F1)
         pinMode(pin, (WiringPinMode)mode);
